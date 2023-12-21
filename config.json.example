@@ -1,0 +1,21 @@
+{
+    "telegram_settings": {
+        "api_id": 123456789,
+        "api_hash": "xxxxxxxxxxxxxx",
+        "session": "telegram-to-discord"
+    },
+    "discord_bot_token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "streams": [
+        {
+            "input_channels": ["123456789"],
+            "output_hooks": [
+                {
+                    "url": "------------discord.webhook.url-----------"
+                }
+            ]
+        }
+    ],
+    "telegram_channels": {
+        "channel id": "Channel Name"
+    }
+}
