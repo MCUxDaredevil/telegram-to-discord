@@ -7,4 +7,6 @@ config.yml
 *.session
 *.session-journal
 config.json
+dev_config.json
 .idea/
+.env
