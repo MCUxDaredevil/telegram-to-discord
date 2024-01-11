@@ -36,15 +36,28 @@ def resolve_input_id(config, channel_id):
 
 
 def decorate_message(current_message, source_message, entity, parity_offset):
+    if not isinstance(entity, MessageEntityTextUrl):
+         return current_message
     begin = entity.offset - parity_offset
-    end = entity.offset - parity_offset + entity.length
-    target_text = source_message[begin:end]
-    decorated_message = current_message
-
-    if isinstance(entity, MessageEntityTextUrl):
-        decorated_message = current_message.replace(target_text, f"[{target_text}]({entity.url})", 1)
-
-    return decorated_message
+    if entity.url.startswith("https://www.tradingview.com/symbols/"):
+        if entity.offset > 10:
+            target_text = "Chart"
+        else:
+            while begin > 0 and source_message[begin] != "$":
+                begin -= 1
+            end = begin + 1
+            while end < len(source_message) and source_message[end] != "\n":
+                end += 1
+            target_text = source_message[begin:end]
+    elif entity.url.startswith("https://www.otcmarkets.com/stock/"):
+        target_text = "OTC Profile" if "OTC Profile" in current_message else "OTCM Profile"
+    elif entity.url.startswith("https://twitter.com/search"):
+        target_text = "Twitter"
+    else:
+        target_text = source_message[begin:begin + entity.length]
+    return current_message.replace(
+        target_text, f"[{target_text}]({entity.url})", 1
+    )
 
 
 def get_channel_entities(client):
@@ -151,7 +164,6 @@ def start():
             offset = next((e.offset for e in message_entities if isinstance(e, MessageEntityCashtag)), -1) + 1
 
             source_message = deepcopy(message)
-            print(offset)
             for entity in message_entities:
                 message = decorate_message(message, source_message, entity, offset)
 
